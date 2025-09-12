@@ -1,0 +1,34 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Crash Analyzer</title>
+
+    <!-- PWA setup -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <meta name="theme-color" content="#0A0302">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/icon-192x192.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/icon-192x192.png' %}">
+</head>
+<body>
+    <h1>TEST</h1>
+
+
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register("{% static 'js/serviceworker.js' %}")
+        .then(function(registration) {
+            console.log('ServiceWorker registered with scope:', registration.scope);
+        })
+        .catch(function(error) {
+            console.log('ServiceWorker registration failed:', error);
+        });
+    }
+</script>
+
+</body>
+</html>
