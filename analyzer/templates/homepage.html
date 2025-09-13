@@ -5,11 +5,11 @@
 <div class="container py-5">
     <div class="text-center mb-5">
         <h1 class="display-4">Car Crash Analyzer</h1>
-        <p class="lead">Upload images to detect damaged parts of your car.</p>
+        <p class="lead">Upload images to detect damaged parts of your car and estimate repair costs.</p>
     </div>
 
-    <!-- Upload Images in Grid -->
-    <form method="post" enctype="multipart/form-data" action="">
+    <!-- Upload Images Form -->
+    <form method="post" enctype="multipart/form-data" action="{% url 'analyze' %}">
         {% csrf_token %}
         <div class="row g-3 mb-4">
             <div class="col-md-3">
@@ -22,11 +22,11 @@
             </div>
             <div class="col-md-3">
                 <label for="car_right" class="form-label">Right Side</label>
-                <input type="file" id="car_right" name="car_right" accept="image/*" class="form-control" required>
+                <input type="file" id="car_right" name="car_right" accept="image/*" class="form-control">
             </div>
             <div class="col-md-3">
                 <label for="car_back" class="form-label">Rear View</label>
-                <input type="file" id="car_back" name="car_back" accept="image/*" class="form-control" required>
+                <input type="file" id="car_back" name="car_back" accept="image/*" class="form-control">
             </div>
         </div>
 
@@ -35,30 +35,43 @@
         </div>
     </form>
 
-    <!-- Analysis Results -->
-    <div class="row">
-        <div class="col-12">
-            <h2 class="text-center mb-4">Analysis Results</h2>
+    {% for result in analyzed_results %}
+<div class="card mb-4 shadow-sm">
+    <div class="card-header">
+        <h4>{{ result.filename }}</h4>
+    </div>
+    <div class="card-body">
+        <!-- Annotated image -->
+        <div class="text-center mb-3">
+            <img src="{{ result.result_image }}" class="img-fluid rounded shadow" alt="Detected Damage">
+        </div>
 
-            <!-- Example: Display detected parts in cards -->
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                {% for part, cost in parts_cost.items %}
-                <div class="col">
-                    <div class="card h-100 text-center">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ part|title }}</h5>
-                            <p class="card-text">Estimated Cost: ${{ cost }}</p>
-                        </div>
+        <!-- Parts and costs -->
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for part, cost in result.parts_cost.items %}
+            <div class="col">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ part|title }}</h5>
+                        <p class="card-text">Estimated Cost: Rs{{ cost }}</p>
                     </div>
                 </div>
-                {% endfor %}
             </div>
+            {% endfor %}
+        </div>
 
-            <!-- Total cost -->
-            <div class="text-center mt-4">
-                <h3>Total Estimated Repair Cost: Rs{{ total_cost }}</h3>
-            </div>
+        <!-- Total for this image -->
+        <div class="text-center mt-3">
+            <h5>Total for this image: Rs{{ result.total_cost }}</h5>
         </div>
     </div>
+</div>
+{% endfor %}
+
+<!-- Overall total -->
+<div class="text-center mt-5">
+    <h3>Overall Estimated Repair Cost: Rs{{ overall_total }}</h3>
+</div>
+
 </div>
 {% endblock %}
