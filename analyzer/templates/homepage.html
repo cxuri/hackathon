@@ -1,34 +1,64 @@
-{% load static %}
+{% extends 'base.html' %}
+{% block title %}Home - Car Crash Analyzer{% endblock %}
 
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4">Car Crash Analyzer</h1>
+        <p class="lead">Upload images to detect damaged parts of your car.</p>
+    </div>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Crash Analyzer</title>
+    <!-- Upload Images in Grid -->
+    <form method="post" enctype="multipart/form-data" action="">
+        {% csrf_token %}
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <label for="car_front" class="form-label">Front View</label>
+                <input type="file" id="car_front" name="car_front" accept="image/*" class="form-control" required>
+            </div>
+            <div class="col-md-3">
+                <label for="car_left" class="form-label">Left Side</label>
+                <input type="file" id="car_left" name="car_left" accept="image/*" class="form-control" required>
+            </div>
+            <div class="col-md-3">
+                <label for="car_right" class="form-label">Right Side</label>
+                <input type="file" id="car_right" name="car_right" accept="image/*" class="form-control" required>
+            </div>
+            <div class="col-md-3">
+                <label for="car_back" class="form-label">Rear View</label>
+                <input type="file" id="car_back" name="car_back" accept="image/*" class="form-control" required>
+            </div>
+        </div>
 
-    <!-- PWA setup -->
-    <link rel="manifest" href="{% static 'manifest.json' %}">
-    <meta name="theme-color" content="#0A0302">
-    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/icon-192x192.png' %}">
-    <link rel="apple-touch-icon" href="{% static 'images/icon-192x192.png' %}">
-</head>
-<body>
-    <h1>TEST</h1>
+        <div class="text-center mb-5">
+            <button type="submit" class="btn btn-primary btn-lg">Analyze</button>
+        </div>
+    </form>
 
+    <!-- Analysis Results -->
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Analysis Results</h2>
 
-<script>
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register("{% static 'js/serviceworker.js' %}")
-        .then(function(registration) {
-            console.log('ServiceWorker registered with scope:', registration.scope);
-        })
-        .catch(function(error) {
-            console.log('ServiceWorker registration failed:', error);
-        });
-    }
-</script>
+            <!-- Example: Display detected parts in cards -->
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for part, cost in parts_cost.items %}
+                <div class="col">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ part|title }}</h5>
+                            <p class="card-text">Estimated Cost: ${{ cost }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
 
-</body>
-</html>
+            <!-- Total cost -->
+            <div class="text-center mt-4">
+                <h3>Total Estimated Repair Cost: Rs{{ total_cost }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
